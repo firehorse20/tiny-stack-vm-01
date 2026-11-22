@@ -1,73 +1,94 @@
-import{mkdirSync,readdirSync,readFileSync,writeFileSync}from'node:fs';
-import{join}from'node:path';
-const T=`!2b%'+,0        *******&***&*** ***             AEEA!           &)              %%"%`;
-function run(p,i){
-const D=new Int32Array(256),C=new Int32Array(64),M=new Int32Array(256),o=new Uint8Array(65536);
-let s=0,c=0,l=0,q=0,pc=0,n=0;
-const e=v=>({o:o.slice(0,l),e:v});
-for(;;){
-if(n===1e6)return e(10);
-if(pc<0||pc>=p.length)return e(9);
-const b=p[pc],k=T.charCodeAt(b)-33;
-if(!(k>=0))return e(5);
-const im=k>>4,po=(k>>2)&3,pu=k&3;
-if(pc+im>=p.length)return e(9);
-n++;
-const x=pc+1+im;
-if(s<po)return e(2);
-if(s-po+pu>256)return e(3);
-pc=x;
-switch(b){
-case 0:return e(0);
-case 1:D[s++]=(p[x-1]<<24)>>24;break;
-case 2:D[s++]=p[x-4]|p[x-3]<<8|p[x-2]<<16|p[x-1]<<24;break;
-case 3:s--;break;
-case 4:D[s]=D[s-1];s++;break;
-case 5:{const t=D[s-1];D[s-1]=D[s-2];D[s-2]=t;break;}
-case 6:D[s]=D[s-2];s++;break;
-case 7:{const a=D[s-3];D[s-3]=D[s-2];D[s-2]=D[s-1];D[s-1]=a;break;}
-case 0x17:D[s-1]=-D[s-1]|0;break;
-case 0x1b:D[s-1]=~D[s-1];break;
-case 0x30:case 0x31:case 0x32:{
-const r=((p[x-2]|p[x-1]<<8)<<16)>>16;
-let t=1;
-if(b!==0x30){const v=D[--s];t=b===0x31?v===0:v!==0;}
-if(t)pc=x+r;
-break;}
-case 0x33:if(c===64)return e(7);C[c++]=x;pc=p[x-2]|p[x-1]<<8;break;
-case 0x34:if(!c)return e(8);pc=C[--c];break;
-case 0x40:{const a=D[s-1];if(a<0||a>255)return e(6);D[s-1]=M[a];break;}
-case 0x41:{const a=D[s-1],v=D[s-2];if(a<0||a>255)return e(6);s-=2;M[a]=v;break;}
-case 0x50:{const w=String(D[s-1]);if(l+w.length>65536)return e(11);s--;for(let j=0;j<w.length;j++)o[l++]=w.charCodeAt(j);break;}
-case 0x51:if(l+1>65536)return e(11);o[l++]=D[--s]&255;break;
-case 0x52:D[s++]=q<i.length?i[q++]:-1;break;
-case 0x53:return e(D[--s]&255);
-default:{
-const y=D[s-1],a=D[s-2];
-let r=0;
-if(b===0x10)r=(a+y)|0;
-else if(b===0x11)r=(a-y)|0;
-else if(b===0x12)r=Math.imul(a,y);
-else if(b===0x13){if(!y)return e(4);r=a===-2147483648&&y===-1?a:(a/y)|0;}
-else if(b===0x14){if(!y)return e(4);r=y===-1?0:(a%y)|0;}
-else if(b===0x15){if(!y)return e(4);r=Math.floor((a>>>0)/(y>>>0))|0;}
-else if(b===0x16){if(!y)return e(4);r=(a>>>0)%(y>>>0)|0;}
-else if(b===0x18)r=a&y;
-else if(b===0x19)r=a|y;
-else if(b===0x1a)r=a^y;
-else if(b===0x1c)r=a<<(y&31);
-else if(b===0x1d)r=a>>(y&31);
-else if(b===0x1e)r=(a>>>(y&31))|0;
-else if(b===0x20)r=a===y?1:0;
-else if(b===0x21)r=a<y?1:0;
-else r=(a>>>0)<(y>>>0)?1:0;
-s-=2;D[s++]=r;
-}}}
+import{readdirSync,readFileSync,writeFileSync,mkdirSync}from"node:fs";
+import{join}from"node:path";
+const T={0:[0,0,0],1:[1,0,1],2:[4,0,1],3:[0,1,0],4:[0,1,2],5:[0,2,2],6:[0,2,3],7:[0,3,3],16:[0,2,1],17:[0,2,1],18:[0,2,1],19:[0,2,1],20:[0,2,1],21:[0,2,1],22:[0,2,1],23:[0,1,1],24:[0,2,1],25:[0,2,1],26:[0,2,1],27:[0,1,1],28:[0,2,1],29:[0,2,1],30:[0,2,1],32:[0,2,1],33:[0,2,1],34:[0,2,1],48:[2,0,0],49:[2,1,0],50:[2,1,0],51:[2,0,0],52:[0,0,0],64:[0,1,1],65:[0,2,0],80:[0,1,0],81:[0,1,0],82:[0,0,1],83:[0,1,0]};
+function run(p,u){
+ const D=new Int32Array(256),C=new Int32Array(64),M=new Int32Array(256),o=new Uint8Array(65536);
+ let s=0,c=0,n=0,pc=0,st=0,ip=0;
+ const end=e=>({o:o.slice(0,n),e});
+ for(;;){
+  if(st===1e6)return end(10);
+  if(pc<0||pc>=p.length)return end(9);
+  const op=p[pc],t=T[op];
+  if(!t)return end(5);
+  const im=t[0],po=t[1],pu=t[2];
+  if(pc+im>=p.length)return end(9);
+  st++;
+  const nx=pc+1+im;
+  if(s<po)return end(2);
+  if(s-po+pu>256)return end(3);
+  pc=nx;
+  if(op===0)return end(0);
+  else if(op===1)D[s++]=(p[nx-1]<<24)>>24;
+  else if(op===2)D[s++]=p[nx-4]|(p[nx-3]<<8)|(p[nx-2]<<16)|(p[nx-1]<<24);
+  else if(op===3)s--;
+  else if(op===4){D[s]=D[s-1];s++;}
+  else if(op===5){const v=D[s-1];D[s-1]=D[s-2];D[s-2]=v;}
+  else if(op===6){D[s]=D[s-2];s++;}
+  else if(op===7){const a=D[s-3];D[s-3]=D[s-2];D[s-2]=D[s-1];D[s-1]=a;}
+  else if(op===23)D[s-1]=-D[s-1]|0;
+  else if(op===27)D[s-1]=~D[s-1];
+  else if(op>=16&&op<=34){
+   const b=D[s-1],a=D[s-2];let r;
+   if(op===16)r=(a+b)|0;
+   else if(op===17)r=(a-b)|0;
+   else if(op===18)r=Math.imul(a,b);
+   else if(op===19){if(b===0)return end(4);r=a===-2147483648&&b===-1?a:(a/b)|0;}
+   else if(op===20){if(b===0)return end(4);r=b===-1?0:(a%b)|0;}
+   else if(op===21){if(b===0)return end(4);r=Math.floor((a>>>0)/(b>>>0))|0;}
+   else if(op===22){if(b===0)return end(4);r=((a>>>0)%(b>>>0))|0;}
+   else if(op===24)r=a&b;
+   else if(op===25)r=a|b;
+   else if(op===26)r=a^b;
+   else if(op===28)r=a<<(b&31);
+   else if(op===29)r=a>>(b&31);
+   else if(op===30)r=(a>>>(b&31))|0;
+   else if(op===32)r=a===b?1:0;
+   else if(op===33)r=a<b?1:0;
+   else if(op===34)r=(a>>>0)<(b>>>0)?1:0;
+   s-=2;D[s++]=r;
+  }
+  else if(op>=48&&op<=50){
+   const r=((p[nx-2]|(p[nx-1]<<8))<<16)>>16;
+   let take=op===48;
+   if(op!==48){const v=D[--s];take=op===49?v===0:v!==0;}
+   if(take)pc=nx+r;
+  }
+  else if(op===51){
+   if(c===64)return end(7);
+   C[c++]=nx;pc=p[nx-2]|(p[nx-1]<<8);
+  }
+  else if(op===52){
+   if(c===0)return end(8);
+   pc=C[--c];
+  }
+  else if(op===64){
+   const a=D[s-1];
+   if(a<0||a>255)return end(6);
+   D[s-1]=M[a];
+  }
+  else if(op===65){
+   const a=D[s-1];
+   if(a<0||a>255)return end(6);
+   M[a]=D[s-2];s-=2;
+  }
+  else if(op===80){
+   const g=String(D[s-1]);
+   if(n+g.length>65536)return end(11);
+   s--;
+   for(let k=0;k<g.length;k++)o[n++]=g.charCodeAt(k);
+  }
+  else if(op===81){
+   if(n+1>65536)return end(11);
+   o[n++]=D[--s]&255;
+  }
+  else if(op===82)D[s++]=ip<u.length?u[ip++]:-1;
+  else if(op===83)return end(D[--s]&255);
+ }
 }
-const I=process.env.MAKEFUN_INPUT_DIR??'/input',O=process.env.MAKEFUN_OUTPUT_DIR??'/output';
-for(const d of readdirSync(I).sort()){
-const r=run(new Uint8Array(readFileSync(join(I,d,'program.bin'))),new Uint8Array(readFileSync(join(I,d,'input.bin'))));
-mkdirSync(join(O,d),{recursive:!0});
-writeFileSync(join(O,d,'stdout.bin'),r.o);
-writeFileSync(join(O,d,'exit.txt'),r.e+'\n');
+const I=process.env.MAKEFUN_INPUT_DIR||"/input",O=process.env.MAKEFUN_OUTPUT_DIR||"/output";
+for(const id of readdirSync(I).sort()){
+ const r=run(new Uint8Array(readFileSync(join(I,id,"program.bin"))),new Uint8Array(readFileSync(join(I,id,"input.bin"))));
+ mkdirSync(join(O,id),{recursive:true});
+ writeFileSync(join(O,id,"stdout.bin"),r.o);
+ writeFileSync(join(O,id,"exit.txt"),r.e+"\n");
 }
